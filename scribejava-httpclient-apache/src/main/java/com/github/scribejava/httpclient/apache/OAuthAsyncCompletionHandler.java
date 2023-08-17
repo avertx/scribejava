@@ -11,6 +11,8 @@ import java.util.concurrent.TimeoutException;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.client.protocol.ResponseContentEncoding;
 import org.apache.http.concurrent.FutureCallback;
 
 import com.github.scribejava.core.model.OAuthAsyncRequestCallback;
@@ -19,14 +21,17 @@ import com.github.scribejava.core.model.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
 
 public class OAuthAsyncCompletionHandler<T> implements FutureCallback<HttpResponse> {
 
+    private static final ResponseContentEncoding RESPONSE_CONTENT_ENCODING = new ResponseContentEncoding();
     private final OAuthAsyncRequestCallback<T> callback;
     private final ResponseConverter<T> converter;
     private final CountDownLatch latch;
     private T result;
     private Exception exception;
+    private HttpClientContext hcc = HttpClientContext.create();
 
     public OAuthAsyncCompletionHandler(OAuthAsyncRequestCallback<T> callback, ResponseConverter<T> converter) {
         this.callback = callback;
@@ -43,7 +48,10 @@ public class OAuthAsyncCompletionHandler<T> implements FutureCallback<HttpRespon
             }
 
             final StatusLine statusLine = httpResponse.getStatusLine();
-
+            try {
+                RESPONSE_CONTENT_ENCODING.process(httpResponse, hcc);
+            } catch (HttpException e) {
+            }
             final HttpEntity httpEntity = httpResponse.getEntity();
             final InputStream contentStream = httpEntity == null ? null : httpEntity.getContent();
             final Response response = new Response(statusLine.getStatusCode(), statusLine.getReasonPhrase(), headersMap,
