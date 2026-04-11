@@ -31,13 +31,13 @@
             <url>https://github.com/scribejava/scribejava/blob/master/LICENSE.txt</url>
         </license>
     </licenses>
-
+<!--
     <scm>
         <connection>scm:git:https://github.com/scribejava/scribejava</connection>
         <developerConnection>scm:git:https://github.com/scribejava/scribejava</developerConnection>
         <url>https://github.com/scribejava/scribejava</url>
         <tag>scribejava-8.3.3</tag>
-    </scm>
+    </scm>-->
 
     <developers>
         <developer>
